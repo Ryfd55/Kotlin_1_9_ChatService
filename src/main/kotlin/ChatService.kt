@@ -4,6 +4,7 @@ object ChatService {
 
     private var messageIndex: Int = 1
     private val chats = mutableMapOf<Int, Chat>()
+    private const val count: Int = 6
 
     fun addMessage(userId: Int, message: Message) {
         chats.getOrPut(userId) { Chat() }.apply {
@@ -22,11 +23,6 @@ object ChatService {
         nullingRead.messages.forEach { it.isRead = true }
     }
 
-    fun getChatMessages(userId: Int, count: Int): List<Message> {
-        val chat = chats[userId] ?: throw NoSuchChatException("Error")
-        return chat.messages.filter { !it.isDeleted }.takeLast(count)
-    }
-
     fun deleteChat(userId: Int) {
         chats.remove(userId)
     }
@@ -41,44 +37,44 @@ object ChatService {
         chatWithMessage.messages.find { it.messageId == messageId }?.isDeleted = true
     }
 
-    fun printLastMessages() {       //список чатов
-        for ((userId, chat) in chats) {
+    fun printLastMessages() {       //последние сообщения чатов
+        chats.forEach { (userId, chat) ->
             val lastMessage = chat.messages.lastOrNull { !it.isDeleted }
-//            val unread = chat.messages.forEach{it.isRead == false}) println(1111) else println(2222)
             val messageInfo = lastMessage?.let {
-                "${lastMessage.toStringIsIncoming()} Текст: ${it.text} MessageId: ${lastMessage.messageId} непрочитанных: ${
-                    unReadCount(
-                        userId
-                    )
-                }"
+                "${lastMessage.toStringIsIncoming()} " + "Текст: ${it.text} MessageId: ${lastMessage.messageId}. " +
+                        "Непрочитанных: ${unReadCount(userId)}"
             } ?: "No messages"
             println("Чат с пользователем #$userId - $messageInfo")
         }
     }
 
-    fun printMessagesByUserId(userId: Int) {
-        val userMessages = chats[userId]?.messages?.filter { !it.isDeleted }
-        if (userMessages != null) {
-            if (userMessages.isNotEmpty()) {
-                println("Чат с пользователем #$userId:")
-                userMessages.forEach { message ->
-                    val messageType = if (message.isIncoming) "Входящее" else "Исходящее"
-                    println("Тип: $messageType, Текст: ${message.text}, MessageId: ${message.messageId}")
+    fun getChatList() {       //список чатов
+        chats.forEach { (userId, chat) ->
+            println("#$userId - Непроч.сообщ.: ${unReadCount(userId)}")
+        }
+    }
 
-                }
+    private fun printMessagesByUserId(userId: Int) {
+        val userMessages = chats[userId]?.messages?.filter { !it.isDeleted }
+        if (!userMessages.isNullOrEmpty()) {
+            println("Чат с пользователем #$userId:")
+            userMessages.takeLast(count).forEach { message ->
+                val messageType = if (message.isIncoming) "Входящее" else "Исходящее"
+                println("Тип: $messageType, Текст: ${message.text}, MessageId: ${message.messageId}")
             }
         }
     }
 
     fun getAllMessagesByMessageId(messageId: Int) {
         val userById = findUserIdByMessageId(messageId)
-        if (userById != null) {
+        userById?.let {
             printMessagesByUserId(userById)
+            nullingReadCountByMessageId(messageId)
+            println("Непрочитанных сообщений с пользователем #$userById: ${userById?.let { unReadCount(it) }}")
         }
-        nullingReadCountByMessageId(messageId)
     }
 
-    fun findUserIdByMessageId(messageId: Int): Int? {
+    private fun findUserIdByMessageId(messageId: Int): Int? {
         val chatWithMessage = chats.values.find { chat -> chat.messages.any { it.messageId == messageId } }
         return chatWithMessage?.let { chatEntry ->
             chats.entries.firstOrNull { it.value == chatEntry }?.key
@@ -88,5 +84,12 @@ object ChatService {
     fun getChatByMessageId(messageId: Int): Chat {
         return chats.values.find { chat -> chat.messages.any { it.messageId == messageId } }
             ?: throw NoSuchElementException("Сообщение с MessageId=$messageId не найдено")
+    }
+
+    fun getChatMessages(userId: Int) {
+        val chat = chats[userId] ?: throw NoSuchChatException("Error")
+        chat.messages.forEach { it.isRead = true }
+        printMessagesByUserId(userId)
+        println("Непрочитанных сообщений с пользователем #$userId: ${unReadCount(userId)}")
     }
 }

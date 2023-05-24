@@ -9,7 +9,13 @@ fun main() {
     ChatService.addMessage(3, Message(true, "Сообщение_8", isRead = false))
     ChatService.addMessage(4, Message(true, "Сообщение_9", isRead = false))
     ChatService.addMessage(4, Message(true, "Сообщение_10", isRead = false))
-
+    ChatService.addMessage(3, Message(true, "Сообщение_11", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_12", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_13", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_14", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_15", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_16", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_17", isRead = false))
 
     println("________________________________________")
     println("Выводим чаты")
@@ -20,7 +26,6 @@ fun main() {
     println("Удаляем один чат")
     ChatService.deleteChat(1)
     ChatService.printLastMessages()
-
 
     println()
     println("________________________________________")
@@ -40,25 +45,31 @@ fun main() {
     ChatService.deleteMessage(7)
     ChatService.printLastMessages()
 
-
     println()
     println("________________________________________")
-    println("Получение всех сообщений по Id сообщения")
+    println("Получение всех сообщений по Id сообщения c обнулением непрочитанных")
     ChatService.getAllMessagesByMessageId(6)
+
     println()
+    println("________________________________________")
+    println("добавим в прочитанный чат новые сообщения")
+    ChatService.addMessage(3, Message(true, "Сообщение_18", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_19", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_20", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_21", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_22", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_23", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_24", isRead = false))
+    ChatService.addMessage(3, Message(true, "Сообщение_25", isRead = false))
     ChatService.printLastMessages()
 
     println()
     println("________________________________________")
-    println("добавим в прочитанный чат 1 сообщение")
-    ChatService.addMessage(3, Message(true, "Сообщение_11", isRead = false))
-    ChatService.printLastMessages()
+    println("Получение сообщений по Id чата с обнулением непрочитанных")
+    ChatService.getChatMessages(3)
 
     println()
     println("________________________________________")
-    println("Получение сообщений по Id чата")
-    ChatService.printMessagesByUserId(2)
-    println()
-    ChatService.printLastMessages()
-
+    println("Получение списка чатов")
+    ChatService.getChatList()
 }
